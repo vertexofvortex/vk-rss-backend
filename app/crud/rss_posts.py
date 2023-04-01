@@ -2,7 +2,8 @@
 
 from sqlalchemy.orm import Session
 from app.models.rss_post import RSSPost
-from app.schemas.rss_post import RSSPostCreate
+from app.schemas.rss_post import RSSPostBase, RSSPostCreate
+from app.crud.rss_sources import get_source_by_id
 
 
 def get_all_posts(db: Session):
@@ -16,8 +17,17 @@ def get_posts_by_source_id(db: Session, source_id: int):
 
 def create_post(db: Session, post: RSSPostCreate):
     db_post = RSSPost(**post.dict())
+
     db.add(db_post)
     db.commit()
     db.refresh(db_post)
 
     return db_post
+
+def update_post(db: Session, post: RSSPostBase, post_id: int):
+    db.query(RSSPost).filter(RSSPost.id == post_id).update(values=post.dict())
+    db.commit()
+
+def delete_post(db: Session, post_id: int):
+    db.query(RSSPost).filter(RSSPost.id == post_id).delete()
+    db.commit()

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.crud.rss_posts import create_post, get_all_posts, get_post_by_id, get_posts_by_source_id
+from app.crud.rss_posts import create_post, delete_post, get_all_posts, get_post_by_id, get_posts_by_source_id, update_post
 
 from app.depends import get_db
-from app.schemas.rss_post import RSSPostCreate
+from app.schemas.rss_post import RSSPostBase, RSSPostCreate
 
 
 
@@ -31,10 +31,10 @@ async def create_rss_post(post: RSSPostCreate, db: Session = Depends(get_db)):
 
 
 @router.put("/posts/{id}", tags=["RSS posts"])
-async def update_rss_post(db: Session = Depends(get_db)):
-    pass
+async def update_rss_post(post: RSSPostBase, post_id: int, db: Session = Depends(get_db)):
+    return update_post(db, post, post_id)
 
 
 @router.delete("/posts/{id}", tags=["RSS posts"])
-async def delete_rss_post(db: Session = Depends(get_db)):
-    pass
+async def delete_rss_post(post_id: int, db: Session = Depends(get_db)):
+    return delete_post(db, post_id)
