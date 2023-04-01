@@ -10,6 +10,6 @@ class VKUsertoken(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False, unique=True)
-    encrypted_token = Column(String, nullable=False)
+    encrypted_token = Column(String, nullable=False, unique=True)
 
     groups = relationship("VKGroup", back_populates="usertoken")
