@@ -1,6 +1,8 @@
 """CRUD utils for RSS sources table"""
 
+from sqlalchemy import delete, update
 from sqlalchemy.orm import Session
+from app.models.rss_post import RSSPost
 from app.models.rss_source import RSSSource
 from app.schemas.rss_source import RSSSourceBase
 
@@ -24,8 +26,28 @@ def create_source(db: Session, source: RSSSourceBase):
 
     return db_source
 
-def update_source(db: Session, id: int):
-    pass
+def update_source(db: Session, source_id: int, source: RSSSourceBase):
+    upd_source = (
+        update(RSSSource)
+        .where(RSSSource.id == source_id)
+        .values(**source.dict())
+    )
+    db.execute(upd_source)
+    db.commit()
 
-def delete_source(db: Session, id: int):
-    pass
+    return get_source_by_id(db, source_id)
+
+def delete_source(db: Session, source_id: int):
+    del_source = (
+        delete(RSSSource)
+        .where(RSSSource.id == source_id)
+    )
+    del_posts = (
+        delete(RSSPost)
+        .where(RSSPost.source_id == source_id)
+    )
+    db.execute(del_posts)
+    db.execute(del_source)
+    db.commit()
+
+    return
