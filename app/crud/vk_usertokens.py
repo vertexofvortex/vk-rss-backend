@@ -4,7 +4,8 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 from app.models.vk_group import VKGroup
 from app.models.vk_usertoken import VKUsertoken
-from app.schemas.vk_usertoken import VKUsertokenBase
+from app.schemas.vk_usertoken import VKUsertokenBase, VKUsertokenCreate
+from app.utils.aes_tools.aes_cipher import aes_tools
 
 
 def get_all_tokens(db: Session):
@@ -13,8 +14,14 @@ def get_all_tokens(db: Session):
 def get_token_by_id(db: Session, usertoken_id: int):
     return db.query(VKUsertoken).filter(VKUsertoken.id == usertoken_id).first()
 
-def create_token(db: Session, usertoken: VKUsertokenBase):
-    db_token = VKUsertoken(**usertoken.dict())
+def create_token(db: Session, usertoken: VKUsertokenCreate):
+    passphrase = usertoken.passphrase
+    enc_token = aes_tools.encrypt(usertoken.token, passphrase)
+
+    db_token = VKUsertoken(
+        name=usertoken.name,
+        token=enc_token
+    )
 
     db.add(db_token)
     db.commit()

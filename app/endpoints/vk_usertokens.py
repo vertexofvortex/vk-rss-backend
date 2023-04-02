@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.crud.vk_usertokens import create_token, delete_token, get_all_tokens, get_token_by_id, update_token
 
 from app.depends import get_db
-from app.schemas.vk_usertoken import VKUsertokenBase
+from app.schemas.vk_usertoken import VKUsertokenBase, VKUsertokenCreate, VKUsertokenResponse
 
 
 router = APIRouter()
@@ -12,7 +12,7 @@ router = APIRouter()
 @router.get("/usertokens", tags=["VK usertokens"])
 async def get_all_vk_usertokens(
     db: Session = Depends(get_db)
-):
+) -> list[VKUsertokenResponse]:
     return get_all_tokens(db)
 
 
@@ -20,15 +20,15 @@ async def get_all_vk_usertokens(
 async def get_vk_usertoken_by_id(
     usertoken_id: int,
     db: Session = Depends(get_db)
-):
+) -> VKUsertokenResponse:
     return get_token_by_id(db, usertoken_id)
 
 
 @router.post("/usertokens/{id}", tags=["VK usertokens"])
 async def create_vk_usertoken(
-    usertoken: VKUsertokenBase,
+    usertoken: VKUsertokenCreate,
     db: Session = Depends(get_db)
-):
+) -> VKUsertokenResponse:
     return create_token(db, usertoken)
 
 
@@ -37,7 +37,7 @@ async def update_vk_usertoken(
     usertoken: VKUsertokenBase,
     usertoken_id: int,
     db: Session = Depends(get_db)
-):
+) -> VKUsertokenResponse:
     return update_token(db, usertoken_id, usertoken)
 
 
