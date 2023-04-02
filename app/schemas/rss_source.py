@@ -1,7 +1,6 @@
 """RSS source pydantic schema"""
 
 from pydantic import BaseModel
-
 from app.schemas.rss_post import RSSPost
 
 
