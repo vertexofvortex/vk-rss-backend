@@ -7,6 +7,10 @@ class VKGroupBase(BaseModel):
     vk_id: int
 
 
+class VKGroupCreate(VKGroupBase):
+    token_id: int
+
+
 class VKGroup(VKGroupBase):
     id: int
     token_id: int
