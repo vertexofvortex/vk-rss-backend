@@ -28,7 +28,8 @@ async def get_vk_usertoken_by_id(
 async def create_vk_usertoken(
     usertoken: VKUsertokenCreate,
     db: Session = Depends(get_db)
-) -> VKUsertokenResponse:
+#) -> VKUsertokenResponse:
+):
     return create_token(db, usertoken)
 
 
@@ -45,5 +46,5 @@ async def update_vk_usertoken(
 async def update_vk_usertoken(
     usertoken_id: int,
     db: Session = Depends(get_db)
-):
+) -> None:
     return delete_token(db, usertoken_id)

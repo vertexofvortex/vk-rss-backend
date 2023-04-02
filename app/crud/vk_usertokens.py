@@ -1,6 +1,6 @@
 """CRUD utils for VK usertokens table"""
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, insert, select, update
 from sqlalchemy.orm import Session
 from app.models.vk_group import VKGroup
 from app.models.vk_usertoken import VKUsertoken
@@ -15,19 +15,23 @@ def get_token_by_id(db: Session, usertoken_id: int):
     return db.query(VKUsertoken).filter(VKUsertoken.id == usertoken_id).first()
 
 def create_token(db: Session, usertoken: VKUsertokenCreate):
-    passphrase = usertoken.passphrase
-    enc_token = aes_tools.encrypt(usertoken.token, passphrase)
+    enc_token = aes_tools.encrypt(usertoken.token, usertoken.passphrase)
+    print(enc_token)
+    dec_token = aes_tools.decrypt(enc_token, usertoken.passphrase)
+    print(dec_token)
 
-    db_token = VKUsertoken(
-        name=usertoken.name,
-        token=enc_token
+    add_token = (
+        insert(VKUsertoken)
+        .values({
+            "name": usertoken.name,
+            "token": enc_token,
+        })
     )
 
-    db.add(db_token)
+    db.execute(add_token)
     db.commit()
-    db.refresh(db_token)
 
-    return db_token
+    return
 
 def update_token(db: Session, usertoken_id: int, usertoken: VKUsertokenBase):
     upd_token = (

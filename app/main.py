@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 from app.db.database import Base, engine
-from app.endpoints import rss_sources, rss_posts, vk_usertokens, vk_groups
+from app.endpoints import rss_sources, rss_posts, vk_usertokens, vk_groups, vk_api
 
 
 Base.metadata.create_all(engine)
@@ -14,6 +14,7 @@ api.include_router(rss_sources.router)
 api.include_router(rss_posts.router)
 api.include_router(vk_usertokens.router)
 api.include_router(vk_groups.router)
+api.include_router(vk_api.router)
 
 
 @api.get("/")

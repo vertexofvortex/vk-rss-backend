@@ -11,7 +11,7 @@ class AESTools():
         iv = Random.new().read(AES.block_size)
         cipher = AES.new(key, AES.MODE_CBC, iv)
 
-        return base64.b64encode(iv + cipher.encrypt(value.encode()))
+        return base64.b64encode(iv + cipher.encrypt(value.encode())).decode("utf-8")
     
     def decrypt(self, enc_value, raw_key):
         value = base64.b64decode(enc_value)

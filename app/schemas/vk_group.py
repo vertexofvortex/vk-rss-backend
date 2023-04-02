@@ -17,3 +17,18 @@ class VKGroup(VKGroupBase):
 
     class Config:
         orm_mode = True
+
+
+class VKGroupExternal(BaseModel):
+    id: int
+    name: str
+    screen_name: str
+    is_closed: int
+    type: str
+    is_admin: int
+    admin_level: int
+    is_member: int
+    is_advertiser: int
+    photo_50: str
+    photo_100: str
+    photo_200: str
