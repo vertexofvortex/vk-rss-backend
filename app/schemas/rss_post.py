@@ -4,12 +4,12 @@ from pydantic import BaseModel
 
 
 class RSSPostBase(BaseModel):
-    title: str
-    description: str
-    image_url: str
+    title: str | None
+    description: str | None
+    image_url: str | None
     post_url: str
-    categories: str
-    publish_date: str
+    categories: str | None
+    publish_date: str | None
 
 
 class RSSPostCreate(RSSPostBase):

@@ -13,3 +13,4 @@ class VKGroup(Base):
     token_id = Column(Integer, ForeignKey("vk_usertokens.id"))
 
     token = relationship("VKUsertoken", back_populates="groups")
+    sources = relationship("VKGroupsSources", back_populates="group")

@@ -14,3 +14,4 @@ class RSSSource(Base):
     rss_url = Column(String, nullable=False)
     
     posts = relationship("RSSPost", back_populates="source")
+    groups = relationship("VKGroupsSources", back_populates="source")

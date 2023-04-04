@@ -48,11 +48,11 @@ async def get_group_by_id(
     vk_api = VKAPIWrapper(dec_token)
     
     try:
-        groups = await vk_api.get_group_by_id(group_id)
+        group = await vk_api.get_group_by_id(group_id)
     except:
         raise HTTPException(
             detail="An error occured.",
             status_code=500
         )
 
-    return groups
+    return group

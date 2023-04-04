@@ -1,5 +1,6 @@
 """CRUD utils for RSS posts table"""
 
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from app.models.rss_post import RSSPost
 from app.schemas.rss_post import RSSPostBase, RSSPostCreate
@@ -23,6 +24,17 @@ def create_post(db: Session, post: RSSPostCreate):
     db.refresh(db_post)
 
     return db_post
+
+# TODO: делать апдейт, а не скипать
+def create_posts(db: Session, posts: list[RSSPostCreate]):
+    for post in posts:
+        add_post = insert(RSSPost).values(**post.dict())
+        add_post = add_post.on_conflict_do_nothing()
+        
+        db.execute(add_post)
+        db.commit()
+
+    return
 
 def update_post(db: Session, post: RSSPostBase, post_id: int):
     db.query(RSSPost).filter(RSSPost.id == post_id).update(values=post.dict())
