@@ -3,11 +3,21 @@
 from fastapi import FastAPI
 from app.db.database import Base, engine
 from app.endpoints import rss_sources, rss_posts, vk_usertokens, vk_groups, vk_api, parsing
+from fastapi.middleware.cors import CORSMiddleware
 
 
 Base.metadata.create_all(engine)
 
 api = FastAPI(title="VK RSS Bot API", version="0.1.0")
+
+
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 api.include_router(rss_sources.router)
