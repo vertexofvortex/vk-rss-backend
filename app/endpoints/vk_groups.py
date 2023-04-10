@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from app.crud.vk_groups import create_group, create_group_source, delete_group, get_all_groups, get_group_by_id, get_group_sources, get_groups_by_token_id, update_group
 
 from app.depends import get_db
-from app.schemas.vk_group import VKGroupBase, VKGroupCreate
+from app.schemas.vk_group import VKGroupBase, VKGroupCreate, VKGroupRequest
 from app.schemas.vk_groups_sources import VKGroupSourceBase
+from app.crud import CRUD
 
 
 router = APIRouter(tags=["VK groups"])
@@ -14,7 +15,7 @@ router = APIRouter(tags=["VK groups"])
 async def get_all_vk_groups(
     db: Session = Depends(get_db)
 ):
-    return get_all_groups(db)
+    return CRUD.vk_groups.get_all_groups(db)
 
 
 @router.get("/groups/{id}")
@@ -22,7 +23,7 @@ async def get_vk_group_by_id(
     group_id: int,
     db: Session = Depends(get_db)
 ):
-    return get_group_by_id(db, group_id)
+    return CRUD.vk_groups.get_group_by_id(db, group_id)
 
 
 @router.get("/groups/by_token/{id}")
@@ -35,10 +36,10 @@ async def get_vk_groups_by_token_id(
 
 @router.post("/groups")
 async def create_vk_group(
-    group: VKGroupCreate,
+    group: VKGroupRequest,
     db: Session = Depends(get_db)
 ):
-    return create_group(db, group)
+    return await CRUD.vk_groups.create_group(db, group)
 
 
 @router.put("/groups/{id}")

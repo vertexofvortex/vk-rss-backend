@@ -2,12 +2,107 @@
 
 from sqlalchemy import delete, insert, select, update
 from sqlalchemy.orm import Session
+from app.crud.vk_usertokens import get_token_by_id
 from app.models.rss_source import RSSSource
 
 from app.models.vk_group import VKGroup
 from app.models.vk_groups_sources import VKGroupsSources
-from app.schemas.vk_group import VKGroupCreate
+from app.schemas.vk_group import VKGroupCreate, VKGroupRequest
 from app.schemas.vk_groups_sources import VKGroupSourceBase
+from app.utils.aes_tools.aes_cipher import AESTools
+from app.utils.vk_api_wrapper.vk_api_wrapper import VKAPIWrapper
+
+
+class VKGroupMethods:
+    def __init__(self) -> None:
+        pass
+
+
+    def get_all_groups(
+        self,
+        db: Session,
+    ):
+        get_groups = (
+            select(VKGroup)
+        )
+
+        #return db.execute(get_groups).all()
+        return db.query(VKGroup).all()
+    
+
+    def get_group_by_id(
+        self,
+        db: Session,
+        group_id: int,
+    ):
+        get_group = (
+            select(VKGroup)
+            .where(VKGroup.id == group_id)
+        )
+
+        return db.execute(get_group).first()
+    
+
+    def get_groups_by_token_id(
+        self,
+        db: Session, 
+        token_id: int,
+        passphrase: str,
+    ):
+        # TODO:
+        pass
+
+    async def create_group(
+        self,
+        db: Session,
+        group: VKGroupRequest,
+    ):
+        aes_tools = AESTools()
+        enc_token = get_token_by_id(db, group.token_id).token
+        dec_token = aes_tools.decrypt(enc_token, group.passphrase)
+        
+        vk_api = VKAPIWrapper(dec_token)
+
+        try:
+            vk_group = await vk_api.get_group_by_id(group.vk_id)
+        except:
+            raise # TODO: чё raisим?
+
+        db_group = VKGroupCreate(
+            vk_id=vk_group.id,
+            name=vk_group.name,
+            photo_url=vk_group.photo_200,
+            token_id=group.token_id,
+        )
+
+        add_group = (
+            insert(VKGroup)
+            .values(**db_group.dict())
+        )
+
+        db.execute(add_group)
+        db.commit()
+        
+        return
+
+
+    def update_group(
+        self,
+        db: Session,
+        group_id: int,
+        group: VKGroupCreate,
+    ):
+        # TODO:
+        pass
+
+
+    def delete_group(
+        self,
+        db: Session,
+        group_id: int,
+    ):
+        # TODO:
+        pass
 
 
 def get_all_groups(db: Session):

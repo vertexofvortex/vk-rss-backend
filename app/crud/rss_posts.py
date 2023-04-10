@@ -1,10 +1,12 @@
 """CRUD utils for RSS posts table"""
 
+from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from app.models.rss_post import RSSPost
 from app.schemas.rss_post import RSSPostBase, RSSPostCreate
 from app.crud.rss_sources import get_source_by_id
+from app.models.rss_source import RSSSource
 
 
 def get_all_posts(db: Session):

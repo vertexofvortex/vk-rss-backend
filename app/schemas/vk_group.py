@@ -5,10 +5,16 @@ from pydantic import BaseModel
 
 class VKGroupBase(BaseModel):
     vk_id: int
-
+    name: str
+    photo_url: str
 
 class VKGroupCreate(VKGroupBase):
     token_id: int
+
+class VKGroupRequest(BaseModel):
+    vk_id: int
+    token_id: int
+    passphrase: str
 
 
 class VKGroup(VKGroupBase):

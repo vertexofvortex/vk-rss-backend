@@ -24,7 +24,7 @@ async def get_vk_usertoken_by_id(
     return get_token_by_id(db, usertoken_id)
 
 
-@router.post("/usertokens/{id}", tags=["VK usertokens"])
+@router.post("/usertokens", tags=["VK usertokens"])
 async def create_vk_usertoken(
     usertoken: VKUsertokenCreate,
     db: Session = Depends(get_db)
@@ -33,7 +33,7 @@ async def create_vk_usertoken(
     return create_token(db, usertoken)
 
 
-@router.put("/usertokens/{id}", tags=["VK usertokens"])
+@router.put("/usertokens", tags=["VK usertokens"])
 async def update_vk_usertoken(
     usertoken: VKUsertokenBase,
     usertoken_id: int,
@@ -42,8 +42,8 @@ async def update_vk_usertoken(
     return update_token(db, usertoken_id, usertoken)
 
 
-@router.delete("/usertokens/{id}", tags=["VK usertokens"])
-async def update_vk_usertoken(
+@router.delete("/usertokens/{usertoken_id}", tags=["VK usertokens"])
+async def delete_vk_usertoken(
     usertoken_id: int,
     db: Session = Depends(get_db)
 ) -> None:
