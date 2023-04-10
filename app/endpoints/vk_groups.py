@@ -18,7 +18,7 @@ async def get_all_vk_groups(
     return CRUD.vk_groups.get_all_groups(db)
 
 
-@router.get("/groups/{id}")
+@router.get("/groups/{group_id}")
 async def get_vk_group_by_id(
     group_id: int,
     db: Session = Depends(get_db)
@@ -26,7 +26,7 @@ async def get_vk_group_by_id(
     return CRUD.vk_groups.get_group_by_id(db, group_id)
 
 
-@router.get("/groups/by_token/{id}")
+@router.get("/groups/by_token/{token_id}")
 async def get_vk_groups_by_token_id(
     token_id: int,
     db: Session = Depends(get_db)
@@ -42,7 +42,7 @@ async def create_vk_group(
     return await CRUD.vk_groups.create_group(db, group)
 
 
-@router.put("/groups/{id}")
+@router.put("/groups/{group_id}")
 async def update_vk_group(
     # TODO: Not working. Needs fix.
 
@@ -53,7 +53,7 @@ async def update_vk_group(
     return update_group(db, group_id, group)
 
 
-@router.delete("/groups/{id}")
+@router.delete("/groups/{group_id}")
 async def delete_vk_group(
     group_id: int,
     db: Session = Depends(get_db)
@@ -67,6 +67,21 @@ async def get_vk_group_sources(
     db: Session = Depends(get_db)
 ):
     return get_group_sources(db, group_id)
+
+
+@router.get("/groups/posts/all")
+async def get_all_vk_groups_posts(
+    db: Session = Depends(get_db)
+):
+    return CRUD.vk_groups.get_all_groups_posts(db)
+
+
+@router.get("/groups/posts/{group_id}")
+async def get_vk_group_posts(
+    group_id: int,
+    db: Session = Depends(get_db)
+):
+    return CRUD.vk_groups.get_group_posts(db, group_id)
 
 
 @router.post("/groups/sources")

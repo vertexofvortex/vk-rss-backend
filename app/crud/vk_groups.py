@@ -2,12 +2,14 @@
 
 from sqlalchemy import delete, insert, select, update
 from sqlalchemy.orm import Session
+from app.crud.rss_posts import get_posts_by_source_id
 from app.crud.vk_usertokens import get_token_by_id
 from app.models.rss_source import RSSSource
 
 from app.models.vk_group import VKGroup
 from app.models.vk_groups_sources import VKGroupsSources
-from app.schemas.vk_group import VKGroupCreate, VKGroupRequest
+from app.schemas.rss_post import RSSPost
+from app.schemas.vk_group import VKGroupCreate, VKGroupRequest, VKGroupWithPosts
 from app.schemas.vk_groups_sources import VKGroupSourceBase
 from app.utils.aes_tools.aes_cipher import AESTools
 from app.utils.vk_api_wrapper.vk_api_wrapper import VKAPIWrapper
@@ -103,6 +105,41 @@ class VKGroupMethods:
     ):
         # TODO:
         pass
+
+
+    def get_group_posts(
+        self,
+        db: Session,
+        group_id: int,
+    ):
+        group = get_group_by_id(db, group_id)
+        group_sources = get_group_sources(db, group_id)
+        posts = []
+
+        for source in group_sources:
+            posts += get_posts_by_source_id(db, source.id)
+
+        return VKGroupWithPosts(
+            id=group.id,
+            name=group.name,
+            photo_url=group.photo_url,
+            token_id=group.token_id,
+            vk_id=group.vk_id,
+            posts=posts,
+        )
+    
+
+    def get_all_groups_posts(
+        self,
+        db: Session,
+    ):
+        groups = get_all_groups(db)
+        groups_with_posts = []
+
+        for group in groups:
+            groups_with_posts.append(self.get_group_posts(db, group.id))
+
+        return groups_with_posts
 
 
 def get_all_groups(db: Session):

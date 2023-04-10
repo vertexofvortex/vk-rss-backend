@@ -25,7 +25,7 @@ async def get_rss_posts_by_id(
     return get_post_by_id(db, post_id)
 
 
-@router.get("/posts/by_source/{id}", tags=["RSS posts"])
+@router.get("/posts/by_source/{source_id}", tags=["RSS posts"])
 async def get_rss_post_by_source_id(
     source_id: int,
     db: Session = Depends(get_db)
