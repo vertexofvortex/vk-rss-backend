@@ -37,22 +37,21 @@ class VKGroupMethods:
         db: Session,
         group_id: int,
     ):
-        get_group = (
-            select(VKGroupModel)
-            .where(VKGroupModel.id == group_id)
-        )
+        result = db.execute(select(VKGroupModel).where(VKGroupModel.id == group_id)).first()
+        if result:
+            return result.tuple()[0]
+        else:
+            return
 
-        return db.execute(get_group).first()
+        #return db.query(VKGroupModel).filter(VKGroupModel.id == group_id).first()
     
 
     def get_groups_by_token_id(
         self,
         db: Session, 
         token_id: int,
-        passphrase: str,
     ):
-        # TODO:
-        pass
+        return db.query(VKGroupModel).filter(VKGroupModel.token_id == token_id).all()
 
     async def create_group(
         self,
@@ -94,8 +93,20 @@ class VKGroupMethods:
         group_id: int,
         group: VKGroupCreate,
     ):
-        # TODO:
-        pass
+        group = self.get_group_by_id(db, group_id)
+        if not group:
+            return None
+        
+        upd_group = (
+            update(VKGroupModel)
+            .where(VKGroupModel.id == group_id)
+            .values(**group.dict())
+        )
+
+        db.execute(upd_group)
+        db.commit
+
+        return self.get_group_by_id(db, group_id)
 
 
     def delete_group(
@@ -103,8 +114,24 @@ class VKGroupMethods:
         db: Session,
         group_id: int,
     ):
-        # TODO:
-        pass
+        group = self.get_group_by_id(db, group_id)
+        if not group:
+            return None
+        
+        del_group = (
+            delete(VKGroupModel)
+            .where(VKGroupModel.id == group_id)
+        )
+        del_group_sources = (
+            delete(VKGroupSourceModel)
+            .where(VKGroupSourceModel.group_id == group_id)
+        )
+        
+        db.execute(del_group_sources)
+        db.execute(del_group)
+        db.commit()
+
+        return group
 
 
     def get_group_posts(
@@ -112,8 +139,8 @@ class VKGroupMethods:
         db: Session,
         group_id: int,
     ):
-        group = get_group_by_id(db, group_id)
-        group_sources = get_group_sources(db, group_id)
+        group = self.get_group_by_id(db, group_id)
+        group_sources = self.get_group_sources(db, group_id)
         posts = []
 
         for source in group_sources:
@@ -133,7 +160,7 @@ class VKGroupMethods:
         self,
         db: Session,
     ):
-        groups = get_all_groups(db)
+        groups = self.get_all_groups(db)
         groups_with_posts = []
 
         for group in groups:
@@ -174,79 +201,37 @@ class VKGroupMethods:
         db.execute(del_source)
         db.commit()
 
-        return get_group_sources(db, group_id)
+        return self.get_group_sources(db, group_id)
     
 
+    def get_group_sources(
+        self,
+        db: Session,
+        group_id: int
+    ):
+        group_sources = db.query(VKGroupSourceModel).filter(VKGroupSourceModel.group_id == group_id).all()
+        result = []
 
-def get_all_groups(db: Session):
-    return db.query(VKGroupModel).all()
+        for source in group_sources:
+            result.append(db.query(RSSSourceModel).filter(RSSSourceModel.id == source.source_id).one())
 
-def get_group_by_id(db: Session, group_id: int):
-    return db.query(VKGroupModel).filter(VKGroupModel.id == group_id).first()
+        return result
 
-def get_groups_by_token_id(db: Session, token_id):
-    return db.query(VKGroupModel).filter(VKGroupModel.token_id == token_id).all()
+    def create_group_source(
+        self,
+        db: Session,
+        group_source: VKGroupSourceBase
+    ):
+        # add_source = (
+        #     insert(VKGroupsSources)
+        #     .values(**group_source.dict())
+        # )
 
-def create_group(db: Session, group: VKGroupCreate):
-    db_group = VKGroupModel(**group.dict())
+        db.add(VKGroupSourceModel(**group_source.dict()))
+        # db.execute(add_source)
+        db.commit()
 
-    db.add(db_group)
-    db.commit()
-    db.refresh(db_group)
-
-    return db_group
-
-def update_group(db: Session, group_id: int, group: VKGroupCreate):
-    upd_group = (
-        update(VKGroupModel)
-        .where(VKGroupModel.id == group_id)
-        .values(**group.dict())
-    )
-
-    db.execute(upd_group)
-    db.commit
-
-    return get_group_by_id(db, group_id)
-
-def delete_group(db: Session, group_id: int):
-    del_group = (
-        delete(VKGroupModel)
-        .where(VKGroupModel.id == group_id)
-    )
-    del_group_sources = (
-        delete(VKGroupSourceModel)
-        .where(VKGroupSourceModel.group_id == group_id)
-    )
-    
-    db.execute(del_group_sources)
-    db.execute(del_group)
-    db.commit()
-
-    return
-
-
-# extras
-
-def get_group_sources(db: Session, group_id: int):
-    group_sources = db.query(VKGroupSourceModel).filter(VKGroupSourceModel.group_id == group_id).all()
-    result = []
-
-    for source in group_sources:
-        result.append(db.query(RSSSourceModel).filter(RSSSourceModel.id == source.source_id).one())
-
-    return result
-
-def create_group_source(db: Session, group_source: VKGroupSourceBase):
-    # add_source = (
-    #     insert(VKGroupsSources)
-    #     .values(**group_source.dict())
-    # )
-
-    db.add(VKGroupSourceModel(**group_source.dict()))
-    # db.execute(add_source)
-    db.commit()
-
-    return
+        return
 
 
 vk_group_methods = VKGroupMethods()
