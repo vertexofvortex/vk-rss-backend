@@ -5,7 +5,7 @@ from app.db.database import Base
 from sqlalchemy.orm import relationship
 
 
-class VKUsertoken(Base):
+class VKUsertokenModel(Base):
     __tablename__ = "vk_usertokens"
 
     id = Column(Integer, primary_key=True, index=True)

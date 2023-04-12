@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel
 
-from app.schemas.rss_post import RSSPost
+from app.schemas.rss_post_schema import RSSPostModel
 
 
 class VKGroupBase(BaseModel):
@@ -43,4 +43,4 @@ class VKGroupExternal(BaseModel):
 
 
 class VKGroupWithPosts(VKGroup):
-    posts: list[RSSPost]
+    posts: list[RSSPostModel]

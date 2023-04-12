@@ -16,7 +16,7 @@ class RSSPostCreate(RSSPostBase):
     source_id: int
 
 
-class RSSPost(RSSPostBase):
+class RSSPostModel(RSSPostBase):
     id: int
     source_id: int
 

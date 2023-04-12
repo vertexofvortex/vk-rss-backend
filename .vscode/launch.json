@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "dev",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": ["app.main:api", "--reload"]
+        },
+        {
+            "name": "run",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": ["app.main:api"]
+        }
+    ]
+}

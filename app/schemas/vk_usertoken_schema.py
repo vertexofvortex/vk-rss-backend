@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel
 
-from app.schemas.vk_group import VKGroup
+from app.schemas.vk_group_schema import VKGroup
 
 
 class VKUsertokenBase(BaseModel):

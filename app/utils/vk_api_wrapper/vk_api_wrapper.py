@@ -1,6 +1,6 @@
 import aiohttp
 
-from app.schemas.vk_group import VKGroupExternal
+from app.schemas.vk_group_schema import VKGroupExternal
 
 
 class VKAPIWrapper:

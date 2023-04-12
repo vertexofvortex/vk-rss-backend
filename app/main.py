@@ -1,5 +1,6 @@
 """API main entry point"""
 
+from pathlib import Path
 from fastapi import FastAPI
 from app.db.database import Base, engine
 from app.endpoints import rss_sources, rss_posts, vk_usertokens, vk_groups, vk_api, parsing
@@ -7,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 Base.metadata.create_all(engine)
+
 
 api = FastAPI(title="VK RSS Bot API", version="0.1.0")
 

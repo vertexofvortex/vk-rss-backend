@@ -2,52 +2,63 @@
 
 from sqlalchemy import delete, update
 from sqlalchemy.orm import Session
-from app.models.rss_post import RSSPost
-from app.models.rss_source import RSSSource
-from app.schemas.rss_source import RSSSourceBase
+from app.models.rss_post_model import RSSPostModel
+from app.models.rss_source_model import RSSSourceModel
+from app.schemas.rss_source_schema import RSSSourceBase
 
 
-def get_all_sources(db: Session):
-    return db.query(RSSSource).all()
+class RSSSourcesMethods:
+    def __init__(self) -> None:
+        pass
 
-def get_source_by_id(db: Session, id: int):
-    return db.query(RSSSource).filter(RSSSource.id == id).first()
 
-def create_source(db: Session, source: RSSSourceBase):
-    db_source = RSSSource(
-        title=source.title,
-        description=source.description,
-        rss_url=source.rss_url
-    )
+    def get_all_sources(self, db: Session):
+        return db.query(RSSSourceModel).all()
 
-    db.add(db_source)
-    db.commit()
-    db.refresh(db_source)
 
-    return db_source
+    def get_source_by_id(self, db: Session, id: int):
+        return db.query(RSSSourceModel).filter(RSSSourceModel.id == id).first()
 
-def update_source(db: Session, source_id: int, source: RSSSourceBase):
-    upd_source = (
-        update(RSSSource)
-        .where(RSSSource.id == source_id)
-        .values(**source.dict())
-    )
-    db.execute(upd_source)
-    db.commit()
 
-    return get_source_by_id(db, source_id)
+    def create_source(self, db: Session, source: RSSSourceBase):
+        db_source = RSSSourceModel(
+            title=source.title,
+            description=source.description,
+            rss_url=source.rss_url
+        )
 
-def delete_source(db: Session, source_id: int):
-    del_source = (
-        delete(RSSSource)
-        .where(RSSSource.id == source_id)
-    )
-    del_posts = (
-        delete(RSSPost)
-        .where(RSSPost.source_id == source_id)
-    )
-    db.execute(del_posts)
-    db.execute(del_source)
-    db.commit()
+        db.add(db_source)
+        db.commit()
+        db.refresh(db_source)
 
-    return
+        return db_source
+
+
+    def update_source(self, db: Session, source_id: int, source: RSSSourceBase):
+        upd_source = (
+            update(RSSSourceModel)
+            .where(RSSSourceModel.id == source_id)
+            .values(**source.dict())
+        )
+        db.execute(upd_source)
+        db.commit()
+
+        return self.get_source_by_id(db, source_id)
+
+
+    def delete_source(self, db: Session, source_id: int):
+        del_source = (
+            delete(RSSSourceModel)
+            .where(RSSSourceModel.id == source_id)
+        )
+        del_posts = (
+            delete(RSSPostModel)
+            .where(RSSPostModel.source_id == source_id)
+        )
+        db.execute(del_posts)
+        db.execute(del_source)
+        db.commit()
+
+        return
+    
+rss_sources_methods = RSSSourcesMethods()

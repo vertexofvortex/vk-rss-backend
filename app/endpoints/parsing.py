@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.crud.rss_posts import create_posts
-from app.crud.rss_sources import get_all_sources
+from app.crud import CRUD
 from sqlalchemy.orm import Session
 from app.depends import get_db
 
@@ -15,9 +14,9 @@ parser = Parser()
 async def force_parse(
     db: Session = Depends(get_db)
 ):
-    sources = get_all_sources(db)
+    sources = CRUD.rss_sources_methods.get_all_sources(db)
     posts = await parser.parse(sources)
 
-    create_posts(db, posts)
+    CRUD.rss_posts.create_posts(db, posts)
 
-    return posts
+    return

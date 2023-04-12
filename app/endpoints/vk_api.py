@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.crud.vk_usertokens import create_token, get_token_by_id
+from app.crud import vk_usertoken_methods
 from app.depends import get_db
-from app.models.vk_usertoken import VKUsertoken
-from app.schemas.vk_group import VKGroupExternal
-from app.schemas.vk_usertoken import VKUsertokenCreate
+from app.models.vk_usertoken_model import VKUsertokenModel
+from app.schemas.vk_group_schema import VKGroupExternal
+from app.schemas.vk_usertoken_schema import VKUsertokenCreate
 from app.utils.vk_api_wrapper.vk_api_wrapper import VKAPIWrapper
 from app.utils.aes_tools.aes_cipher import aes_tools
 
@@ -19,7 +19,7 @@ async def get_groups_list(
     passphrase: str,
     db: Session = Depends(get_db)
 ):
-    enc_token = get_token_by_id(db, usertoken_id).token
+    enc_token = vk_usertoken_methods.get_token_by_id(db, usertoken_id).token
     dec_token = aes_tools.decrypt(enc_token, passphrase)
 
     vk_api = VKAPIWrapper(dec_token)
@@ -42,7 +42,7 @@ async def get_group_by_id(
     group_id: int,
     db: Session = Depends(get_db)
 ) -> VKGroupExternal:
-    enc_token = get_token_by_id(db, usertoken_id).token
+    enc_token = vk_usertoken_methods.get_token_by_id(db, usertoken_id).token
     dec_token = aes_tools.decrypt(enc_token, passphrase)
 
     vk_api = VKAPIWrapper(dec_token)

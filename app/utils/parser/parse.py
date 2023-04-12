@@ -1,21 +1,21 @@
 import feedparser
 import aiohttp
-from app.models.rss_post import RSSPost
-from app.schemas.rss_post import RSSPostCreate
-from app.schemas.rss_source import RSSSource
+from app.models.rss_post_model import RSSPostModel
+from app.schemas.rss_post_schema import RSSPostCreate
+from app.schemas.rss_source_schema import RSSSource
 
 
 class Parser():
     def __init__(self) -> None:
         pass
 
-    def _strip_feed(self, source: RSSSource, feed) -> RSSPostCreate:
+    def _strip_feed(self, source: RSSSource, feed) -> list[RSSPostCreate]:
         stripped_feed = []
 
         for item in feed:
             stripped_feed.append(RSSPostCreate(
                 source_id = source.id,
-                title= (
+                title = (
                     item.title
                     if hasattr(item, "title")
                     else None
@@ -50,23 +50,54 @@ class Parser():
         return stripped_feed
 
 
+    def _checkFeed(self, feed):
+        check_results = {
+            "total_posts": 0,
+            "titles": 0,
+            "descriptions": 0,
+            "image_urls": 0,
+            "post_urls": 0,
+            "categories": 0,
+            "publish_dates": 0,
+        }
+
+        for item in feed:
+            check_results["total_posts"] += 1
+            if hasattr(item, "title"): check_results["titles"] += 1
+            if hasattr(item, "description"): check_results["descriptions"] += 1
+            if hasattr(item, "image_url"): check_results["image_urls"] += 1
+            if hasattr(item, "post_url"): check_results["post_urls"] += 1
+            if hasattr(item, "category"): check_results["categories"] += 1
+            if hasattr(item, "publish_date"): check_results["publish_dates"] += 1
+
+        return check_results
+
+
     async def parse(self, sources: list[RSSSource]) -> list[RSSPostCreate]:
         posts: RSSPostCreate = []
 
         for source in sources:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(source.rss_url) as response:
-                    feed = feedparser.parse(await response.text())
-                    stripped_feed = self._strip_feed(source, feed.entries)
-                    
-                    # feeds.append({
-                    #     "name": source.title,
-                    #     #"description": feed.feed.description if hasattr(feed.feed, "description") else None,
-                    #     "description": source.description,
-                    #     "rss_url": source.rss_url,
-                    #     "items": stripped_feed,
-                    # })
+            try: 
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(source.rss_url) as response:
+                        print(f"Fetching {source.title} feed...")
+                        feed = feedparser.parse(await response.text())
+                        stripped_feed = self._strip_feed(source, feed.entries)
 
-                    posts += stripped_feed
+                        posts += stripped_feed
+            except:
+                print(f"An error occured while parsing the next feed: {source.title}")
 
         return posts
+    
+
+    async def checkFeed(self, source_url: str):
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(source_url) as response:
+                    feed = feedparser.parse(await response.text())
+                    check_results = self._checkFeed(feed.entries)
+
+                return check_results
+        except:
+            return False

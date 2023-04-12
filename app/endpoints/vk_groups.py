@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from app.crud.vk_groups import create_group, create_group_source, delete_group, get_all_groups, get_group_by_id, get_group_sources, get_groups_by_token_id, update_group
 
 from app.depends import get_db
-from app.schemas.vk_group import VKGroupBase, VKGroupCreate, VKGroupRequest
-from app.schemas.vk_groups_sources import VKGroupSourceBase
+from app.schemas.vk_group_schema import VKGroupBase, VKGroupCreate, VKGroupRequest
+from app.schemas.vk_group_source_schema import VKGroupSourceBase
 from app.crud import CRUD
 
 
@@ -85,8 +85,17 @@ async def get_vk_group_posts(
 
 
 @router.post("/groups/sources")
-async def create_vk_group_sources(
-    group_source: VKGroupSourceBase,
+async def attach_sources_to_group(
+    group_sources: list[VKGroupSourceBase],
     db: Session = Depends(get_db)
 ):
-    return create_group_source(db, group_source)
+    return CRUD.vk_groups.create_group_sources(db, group_sources)
+
+
+@router.delete("/groups/{group_id}/sources/{source_id}")
+async def detach_source_from_group(
+    group_id: int,
+    source_id: int,
+    db: Session = Depends(get_db)
+):
+    return CRUD.vk_groups.delete_group_source(db, group_id, source_id)

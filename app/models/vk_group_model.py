@@ -5,7 +5,7 @@ from app.db.database import Base
 from sqlalchemy.orm import relationship
 
 
-class VKGroup(Base):
+class VKGroupModel(Base):
     __tablename__ = "vk_groups"
 
     id = Column(Integer, primary_key=True, index=True)

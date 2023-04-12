@@ -1,7 +1,7 @@
 """RSS source pydantic schema"""
 
 from pydantic import BaseModel
-from app.schemas.rss_post import RSSPost
+from app.schemas.rss_post_schema import RSSPostModel
 
 
 class RSSSourceBase(BaseModel):
@@ -12,7 +12,7 @@ class RSSSourceBase(BaseModel):
 
 class RSSSource(RSSSourceBase):
     id: int
-    posts: list[RSSPost] = []
+    posts: list[RSSPostModel] = []
 
     class Config:
         orm_mode = True
