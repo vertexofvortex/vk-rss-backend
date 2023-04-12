@@ -18,4 +18,4 @@ class RSSPostModel(Base):
     # TODO: publish_date must be a DateTime
     publish_date = Column(String, nullable=True)
 
-    source = relationship("RSSSource", back_populates="posts")
+    source = relationship("RSSSourceModel", back_populates="posts")

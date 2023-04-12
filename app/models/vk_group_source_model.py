@@ -17,5 +17,5 @@ class VKGroupSourceModel(Base):
     source_id = Column(Integer, ForeignKey("rss_sources.id"))
     identity = Column(String, unique=True, default=generateDefault)
 
-    group = relationship("VKGroup", back_populates="sources")
-    source = relationship("RSSSource", back_populates="groups")
+    group = relationship("VKGroupModel", back_populates="sources")
+    source = relationship("RSSSourceModel", back_populates="groups")

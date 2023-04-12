@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.crud.vk_groups import create_group, create_group_source, delete_group, get_all_groups, get_group_by_id, get_group_sources, get_groups_by_token_id, update_group
+from app.crud import CRUD
 
 from app.depends import get_db
 from app.schemas.vk_group_schema import VKGroupBase, VKGroupCreate, VKGroupRequest
@@ -31,7 +31,7 @@ async def get_vk_groups_by_token_id(
     token_id: int,
     db: Session = Depends(get_db)
 ):
-    return get_groups_by_token_id(db, token_id)
+    return CRUD.vk_group_methods.get_groups_by_token_id(db, token_id)
 
 
 @router.post("/groups")
@@ -50,7 +50,7 @@ async def update_vk_group(
     group_id: int,
     db: Session = Depends(get_db)
 ):
-    return update_group(db, group_id, group)
+    return CRUD.vk_group_methods.update_group(db, group_id, group)
 
 
 @router.delete("/groups/{group_id}")
@@ -58,7 +58,7 @@ async def delete_vk_group(
     group_id: int,
     db: Session = Depends(get_db)
 ):
-    return delete_group(db, group_id)
+    return CRUD.vk_group_methods.delete_group(db, group_id)
 
 
 @router.get("/groups/sources/{group_id}")
@@ -66,14 +66,14 @@ async def get_vk_group_sources(
     group_id: int,
     db: Session = Depends(get_db)
 ):
-    return get_group_sources(db, group_id)
+    return CRUD.vk_group_methods.get_group_sources(db, group_id)
 
 
 @router.get("/groups/posts/all")
 async def get_all_vk_groups_posts(
     db: Session = Depends(get_db)
 ):
-    return CRUD.vk_groups.get_all_groups_posts(db)
+    return CRUD.vk_group_methods.get_all_groups_posts(db)
 
 
 @router.get("/groups/posts/{group_id}")

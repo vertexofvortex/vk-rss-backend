@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from app.crud.vk_usertokens import vk_usertoken_methods
 from app.models.rss_source_model import RSSSourceModel
-from app.crud import rss_posts
+from app.crud import rss_posts_methods
 from app.models.vk_group_model import VKGroupModel
 from app.models.vk_group_source_model import VKGroupSourceModel
 from app.schemas.rss_post_schema import RSSPostModel
@@ -117,7 +117,7 @@ class VKGroupMethods:
         posts = []
 
         for source in group_sources:
-            posts += rss_posts.get_posts_by_source_id(db, source.id)
+            posts += rss_posts_methods.get_posts_by_source_id(db, source.id)
 
         return VKGroupWithPosts(
             id=group.id,

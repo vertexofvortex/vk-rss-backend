@@ -12,4 +12,4 @@ class VKUsertokenModel(Base):
     name = Column(String, nullable=False, unique=True)
     token = Column(String, nullable=False, unique=True)
 
-    groups = relationship("VKGroup", back_populates="token")
+    groups = relationship("VKGroupModel", back_populates="token")

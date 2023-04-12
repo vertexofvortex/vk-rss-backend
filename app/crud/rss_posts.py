@@ -69,4 +69,4 @@ class RSSPostsMethods:
         db.commit()
 
 
-rss_posts_methods = RSSPostsMethods
+rss_posts_methods = RSSPostsMethods()

@@ -13,7 +13,6 @@ parser = Parser()
 @router.get("/sources/check")
 async def check_source_url(
     url: str,
-    db: Session = Depends(get_db)
 ):
     check_results = await parser.checkFeed(url)
 

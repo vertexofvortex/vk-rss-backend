@@ -14,5 +14,5 @@ class VKGroupModel(Base):
     name = Column(String, nullable=False)
     photo_url = Column(String, nullable=False)
 
-    token = relationship("VKUsertoken", back_populates="groups")
-    sources = relationship("VKGroupsSources", back_populates="group")
+    token = relationship("VKUsertokenModel", back_populates="groups")
+    sources = relationship("VKGroupSourceModel", back_populates="group")
