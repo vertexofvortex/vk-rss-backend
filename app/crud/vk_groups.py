@@ -37,7 +37,11 @@ class VKGroupMethods:
         db: Session,
         group_id: int,
     ):
-        result = db.execute(select(VKGroupModel).where(VKGroupModel.id == group_id)).first()
+        result = db.execute(
+            select(VKGroupModel)
+            .where(VKGroupModel.id == group_id)
+        ).first()
+        # FIXME: .scalars()
         if result:
             return result.tuple()[0]
         else:

@@ -1,6 +1,6 @@
 """CRUD utils for RSS posts table"""
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from app.models.rss_post_model import RSSPostModel
@@ -16,21 +16,14 @@ class RSSPostsMethods:
     def get_all_posts(self, db: Session):
         return db.query(RSSPostModel).all()
 
-
     def get_post_by_id(self, db: Session, post_id: int):
-        # get_post = (
-        #     select(RSSPost)
-        #     #.join(RSSSource, RSSPost.source_id == RSSSource.id)
-        #     .where(RSSPost.id == post_id)
-        # )
-        
-        # result = db.execute(get_post).first()
-        # #print(dict(result))
-        # return result._asdict()
+        result = db.execute(
+            select(RSSPostModel)
+            .where(RSSPostModel.id == post_id)
+            
+        ).scalars().first()
 
-        #return db.query(RSSPost).filter(RSSPost.id == post_id).first()
-
-        return db.query(RSSPostModel).join(RSSSourceModel, RSSSourceModel.id == RSSPostModel.source_id).filter(RSSPostModel.id == post_id).first()
+        return result
 
 
     def get_posts_by_source_id(self, db: Session, source_id: int):
@@ -47,14 +40,17 @@ class RSSPostsMethods:
         return db_post
 
 
-    # TODO: делать апдейт, а не скипать
     def create_posts(self, db: Session, posts: list[RSSPostCreate]):
         for post in posts:
-            add_post = insert(RSSPostModel).values(**post.dict())
-            add_post = add_post.on_conflict_do_nothing()
+            add_post = (
+                insert(RSSPostModel)
+                .values(**post.dict())
+                .on_conflict_do_nothing()
+            )
             
             db.execute(add_post)
-            db.commit()
+        
+        db.commit()
 
         return
 

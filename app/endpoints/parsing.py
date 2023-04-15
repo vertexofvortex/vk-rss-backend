@@ -17,6 +17,6 @@ async def force_parse(
     sources = CRUD.rss_sources_methods.get_all_sources(db)
     posts = await parser.parse(sources)
 
-    CRUD.rss_posts.create_posts(db, posts)
+    CRUD.rss_posts_methods.create_posts(db, posts)
 
-    return
+    return len(posts)

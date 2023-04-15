@@ -17,11 +17,8 @@ class VKUsertokensMethods:
         return db.query(VKUsertokenModel).filter(VKUsertokenModel.id == usertoken_id).first()
 
 
-    def create_token(db: Session, usertoken: VKUsertokenCreate):
+    def create_token(self, db: Session, usertoken: VKUsertokenCreate):
         enc_token = aes_tools.encrypt(usertoken.token, usertoken.passphrase)
-        print(enc_token)
-        dec_token = aes_tools.decrypt(enc_token, usertoken.passphrase)
-        print(dec_token)
 
         add_token = (
             insert(VKUsertokenModel)
