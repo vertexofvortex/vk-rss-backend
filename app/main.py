@@ -3,7 +3,7 @@
 from pathlib import Path
 from fastapi import FastAPI
 from app.db.database import Base, engine
-from app.endpoints import rss_sources, rss_posts, vk_usertokens, vk_groups, vk_api, parsing
+from app.endpoints import rss_sources, rss_posts, vk_usertokens, vk_groups, vk_api, parsing, image_gen
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -28,6 +28,7 @@ api.include_router(vk_usertokens.router)
 api.include_router(vk_groups.router)
 api.include_router(vk_api.router)
 api.include_router(parsing.router)
+api.include_router(image_gen.router)
 
 
 @api.get("/")

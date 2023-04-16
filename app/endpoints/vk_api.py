@@ -2,18 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.crud import vk_usertoken_methods
 from app.depends import get_db
-from app.models.vk_usertoken_model import VKUsertokenModel
 from app.schemas.vk_group_schema import VKGroupExternal
-from app.schemas.vk_usertoken_schema import VKUsertokenCreate
+from app.utils.img_gen.img_gen import generate_image
 from app.utils.vk_api_wrapper.vk_api_wrapper import VKAPIWrapper
 from app.utils.aes_tools.aes_cipher import aes_tools
 
 
-router = APIRouter()
+router = APIRouter(tags=["VK API"])
 
 
 # TODO: return schema
-@router.get("/vk_api/groups", tags=["VK API"])
+@router.get("/vk_api/groups")
 async def get_groups_list(
     usertoken_id: int,
     passphrase: str,
@@ -35,7 +34,7 @@ async def get_groups_list(
     return groups
 
 
-@router.get("/vk_api/groups/{group_id}", tags=["VK API"])
+@router.get("/vk_api/groups/{group_id}")
 async def get_group_by_id(
     usertoken_id: int,
     passphrase: str,
@@ -56,3 +55,16 @@ async def get_group_by_id(
         )
 
     return group
+
+
+@router.post("/vk_api/post")
+async def create_post(
+    title: str,
+    description: str,
+    source: str,
+    source_url: str,
+    image_url: str,
+    # logo_url: str, TODO: в бд у источников должны храниться логотипы
+    db: Session = Depends(get_db),
+):
+    pass
