@@ -1,5 +1,6 @@
 """RSS source pydantic schema"""
 
+from typing import Union
 from pydantic import BaseModel
 from app.schemas.rss_post_schema import RSSPostModel
 
@@ -10,9 +11,13 @@ class RSSSourceBase(BaseModel):
     rss_url: str
 
 
+class RSSSourceWithLogoCreate(RSSSourceBase):
+    logo: Union[bytes, None]
+
+
 class RSSSource(RSSSourceBase):
     id: int
-    posts: list[RSSPostModel] = []
+    #posts: list[RSSPostModel] = []
 
     class Config:
         orm_mode = True
