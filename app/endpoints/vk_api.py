@@ -83,6 +83,7 @@ async def create_post(
     
     image_bytes = BytesIO(image.file.read())
     logo_bytes = BytesIO(logo.file.read())
+    message = f"{title}%0A%0A{description}%0A%0A{source_url}"
     
     generated_image = generate_image(
         title=title,
@@ -96,8 +97,8 @@ async def create_post(
 
     await vk_api.create_post(
         group_id=group_vk_id,
-        message=description,
+        message=message,
         copyright=source_url,
         image=generated_image,
-        image_filename=image.filename
+        image_filename="image.png"
     )

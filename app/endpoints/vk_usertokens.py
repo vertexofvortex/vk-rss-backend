@@ -16,7 +16,7 @@ async def get_all_vk_usertokens(
     return vk_usertoken_methods.get_all_tokens(db)
 
 
-@router.get("/usertokens/{id}", tags=["VK usertokens"])
+@router.get("/usertokens/{usertoken_id}", tags=["VK usertokens"])
 async def get_vk_usertoken_by_id(
     usertoken_id: int,
     db: Session = Depends(get_db)
