@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from io import BytesIO
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
-from app.crud import vk_usertoken_methods
+from app.crud import CRUD, vk_usertoken_methods
 from app.depends import get_db
 from app.schemas.vk_group_schema import VKGroupExternal
 from app.utils.img_gen.img_gen import generate_image
@@ -59,12 +60,44 @@ async def get_group_by_id(
 
 @router.post("/vk_api/post")
 async def create_post(
-    title: str,
-    description: str,
-    source: str,
-    source_url: str,
-    image_url: str,
-    # logo_url: str, TODO: в бд у источников должны храниться логотипы
+    title: str = Form(),
+    description: str = Form(),
+    source: str = Form(),
+    source_url: str = Form(),
+    image: UploadFile = File(),
+    logo: UploadFile = Form(),
+    usertoken_id: int = Form(),
+    passphrase: str = Form(),
+    group_id: int = Form(),
     db: Session = Depends(get_db),
 ):
-    pass
+    enc_token = vk_usertoken_methods.get_token_by_id(db, usertoken_id).token
+    dec_token = aes_tools.decrypt(enc_token, passphrase)
+
+    vk_api = VKAPIWrapper(dec_token)
+
+    try:
+        group_vk_id = CRUD.vk_group_methods.get_group_by_id(db, group_id).vk_id
+    except:
+        raise HTTPException(status_code=500, detail=f"Group with ID {group_id} does not exist.")
+    
+    image_bytes = BytesIO(image.file.read())
+    logo_bytes = BytesIO(logo.file.read())
+    
+    generated_image = generate_image(
+        title=title,
+        description=description,
+        source=source,
+        image_bytes=image_bytes,
+        logo_bytes=logo_bytes,
+    )
+
+    generated_image.seek(0)
+
+    await vk_api.create_post(
+        group_id=group_vk_id,
+        message=description,
+        copyright=source_url,
+        image=generated_image,
+        image_filename=image.filename
+    )
