@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import Annotated, List, Optional
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Response, UploadFile
 from sqlalchemy.orm import Session
 from app.crud import CRUD
@@ -8,6 +8,7 @@ from app.schemas.rss_source_schema import (
     RSSSourceBase,
     RSSSourceWithLogoCreate,
 )
+from app.security import auth
 from app.utils.parser.parse import Parser
 
 
@@ -16,9 +17,7 @@ parser = Parser()
 
 
 @router.get("/sources/check")
-async def check_source_url(
-    url: str,
-):
+async def check_source_url(url: str):
     check_results = await parser.checkFeed(url)
 
     if check_results:
@@ -28,7 +27,9 @@ async def check_source_url(
 
 
 @router.get("/sources")
-async def get_all_rss_sources(db: Session = Depends(get_db)) -> List[RSSSource]:
+async def get_all_rss_sources(
+    auth: Annotated[bool, Depends(auth)], db: Session = Depends(get_db)
+) -> List[RSSSource]:
     return CRUD.rss_sources_methods.get_all_sources(db)
 
 
@@ -41,6 +42,7 @@ async def get_rss_source_by_id(source_id: int, db: Session = Depends(get_db)):
 
 @router.get("/source_logo/{source_id}")
 async def get_rss_source_logo(
+    auth: Annotated[bool, Depends(auth)],
     source_id: int,
     db: Session = Depends(get_db),
 ):
@@ -54,6 +56,7 @@ async def get_rss_source_logo(
 
 @router.post("/sources")
 async def create_rss_source(
+    auth: Annotated[bool, Depends(auth)],
     title: str = Form(),
     description: Optional[str] = Form(""),
     rss_url: str = Form(),
@@ -83,6 +86,7 @@ async def create_rss_source(
 
 @router.put("/sources/{source_id}")
 async def update_rss_source(
+    auth: Annotated[bool, Depends(auth)],
     source_id: int,
     title: str = Form(),
     description: str = Form(),
@@ -114,5 +118,7 @@ async def update_rss_source(
 
 
 @router.delete("/sources/{source_id}")
-async def delete_rss_source(source_id: int, db: Session = Depends(get_db)):
+async def delete_rss_source(
+    auth: Annotated[bool, Depends(auth)], source_id: int, db: Session = Depends(get_db)
+):
     return CRUD.rss_sources_methods.delete_source(db, source_id)

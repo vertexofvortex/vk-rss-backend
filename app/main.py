@@ -11,6 +11,7 @@ from app.endpoints import (
     vk_api,
     parsing,
     image_gen,
+    auth,
 )
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -37,6 +38,7 @@ api.include_router(vk_groups.router)
 api.include_router(vk_api.router)
 api.include_router(parsing.router)
 api.include_router(image_gen.router)
+api.include_router(auth.router)
 
 
 @api.get("/")
