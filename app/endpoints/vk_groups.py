@@ -12,17 +12,12 @@ router = APIRouter(tags=["VK groups"])
 
 
 @router.get("/groups")
-async def get_all_vk_groups(
-    db: Session = Depends(get_db)
-):
+async def get_all_vk_groups(db: Session = Depends(get_db)):
     return CRUD.vk_group_methods.get_all_groups(db)
 
 
 @router.get("/groups/{group_id}")
-async def get_vk_group_by_id(
-    group_id: int,
-    db: Session = Depends(get_db)
-):
+async def get_vk_group_by_id(group_id: int, db: Session = Depends(get_db)):
     result = CRUD.vk_group_methods.get_group_by_id(db, group_id)
 
     if result:
@@ -32,10 +27,7 @@ async def get_vk_group_by_id(
 
 
 @router.get("/groups/by_token/{token_id}")
-async def get_vk_groups_by_token_id(
-    token_id: int,
-    db: Session = Depends(get_db)
-):
+async def get_vk_groups_by_token_id(token_id: int, db: Session = Depends(get_db)):
     result = CRUD.vk_group_methods.get_groups_by_token_id(db, token_id)
 
     if len(result) > 0:
@@ -45,20 +37,16 @@ async def get_vk_groups_by_token_id(
 
 
 @router.post("/groups")
-async def create_vk_group(
-    group: VKGroupRequest,
-    db: Session = Depends(get_db)
-):
+async def create_vk_group(group: VKGroupRequest, db: Session = Depends(get_db)):
     return await CRUD.vk_group_methods.create_group(db, group)
 
 
 @router.put("/groups/{group_id}")
 async def update_vk_group(
     # TODO: Not working. Needs fix.
-
     group: VKGroupBase,
     group_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     result = CRUD.vk_group_methods.update_group(db, group_id, group)
 
@@ -69,10 +57,7 @@ async def update_vk_group(
 
 
 @router.delete("/groups/{group_id}")
-async def delete_vk_group(
-    group_id: int,
-    db: Session = Depends(get_db)
-):
+async def delete_vk_group(group_id: int, db: Session = Depends(get_db)):
     result = CRUD.vk_group_methods.delete_group(db, group_id)
 
     if result:
@@ -82,10 +67,7 @@ async def delete_vk_group(
 
 
 @router.get("/groups/sources/{group_id}")
-async def get_vk_group_sources(
-    group_id: int,
-    db: Session = Depends(get_db)
-):
+async def get_vk_group_sources(group_id: int, db: Session = Depends(get_db)):
     result = CRUD.vk_group_methods.get_group_sources(db, group_id)
 
     if len(result) > 0:
@@ -95,32 +77,24 @@ async def get_vk_group_sources(
 
 
 @router.get("/groups/posts/all")
-async def get_all_vk_groups_posts(
-    db: Session = Depends(get_db)
-):
+async def get_all_vk_groups_posts(db: Session = Depends(get_db)):
     return CRUD.vk_group_methods.get_all_groups_posts(db)
 
 
 @router.get("/groups/posts/{group_id}")
-async def get_vk_group_posts(
-    group_id: int,
-    db: Session = Depends(get_db)
-):
+async def get_vk_group_posts(group_id: int, db: Session = Depends(get_db)):
     return CRUD.vk_group_methods.get_group_posts(db, group_id)
 
 
 @router.post("/groups/sources")
 async def attach_sources_to_group(
-    group_sources: list[VKGroupSourceBase],
-    db: Session = Depends(get_db)
+    group_sources: list[VKGroupSourceBase], db: Session = Depends(get_db)
 ):
     return CRUD.vk_group_methods.create_group_sources(db, group_sources)
 
 
 @router.delete("/groups/{group_id}/sources/{source_id}")
 async def detach_source_from_group(
-    group_id: int,
-    source_id: int,
-    db: Session = Depends(get_db)
+    group_id: int, source_id: int, db: Session = Depends(get_db)
 ):
     return CRUD.vk_group_methods.delete_group_source(db, group_id, source_id)

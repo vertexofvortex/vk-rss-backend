@@ -15,45 +15,34 @@ router = APIRouter(tags=["VK API"])
 # TODO: return schema
 @router.get("/vk_api/groups")
 async def get_groups_list(
-    usertoken_id: int,
-    passphrase: str,
-    db: Session = Depends(get_db)
+    usertoken_id: int, passphrase: str, db: Session = Depends(get_db)
 ):
     enc_token = vk_usertoken_methods.get_token_by_id(db, usertoken_id).token
     dec_token = aes_tools.decrypt(enc_token, passphrase)
 
     vk_api = VKAPIWrapper(dec_token)
-    
+
     try:
         groups = await vk_api.get_groups()
     except:
-        raise HTTPException(
-            detail="An error occured.",
-            status_code=500
-        )
+        raise HTTPException(detail="An error occured.", status_code=500)
 
     return groups
 
 
 @router.get("/vk_api/groups/{group_id}")
 async def get_group_by_id(
-    usertoken_id: int,
-    passphrase: str,
-    group_id: int,
-    db: Session = Depends(get_db)
+    usertoken_id: int, passphrase: str, group_id: int, db: Session = Depends(get_db)
 ) -> VKGroupExternal:
     enc_token = vk_usertoken_methods.get_token_by_id(db, usertoken_id).token
     dec_token = aes_tools.decrypt(enc_token, passphrase)
 
     vk_api = VKAPIWrapper(dec_token)
-    
+
     try:
         group = await vk_api.get_group_by_id(group_id)
     except:
-        raise HTTPException(
-            detail="An error occured.",
-            status_code=500
-        )
+        raise HTTPException(detail="An error occured.", status_code=500)
 
     return group
 
@@ -79,12 +68,14 @@ async def create_post(
     try:
         group_vk_id = CRUD.vk_group_methods.get_group_by_id(db, group_id).vk_id
     except:
-        raise HTTPException(status_code=500, detail=f"Group with ID {group_id} does not exist.")
-    
+        raise HTTPException(
+            status_code=500, detail=f"Group with ID {group_id} does not exist."
+        )
+
     image_bytes = BytesIO(image.file.read())
     logo_bytes = BytesIO(logo.file.read())
     message = f"{title}%0A%0A{description}%0A%0A{source_url}"
-    
+
     generated_image = generate_image(
         title=title,
         description=description,
@@ -100,5 +91,5 @@ async def create_post(
         message=message,
         copyright=source_url,
         image=generated_image,
-        image_filename="image.png"
+        image_filename="image.png",
     )

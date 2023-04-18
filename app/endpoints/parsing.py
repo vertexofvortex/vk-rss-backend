@@ -11,9 +11,7 @@ parser = Parser()
 
 
 @router.get("/parsing/force_parse")
-async def force_parse(
-    db: Session = Depends(get_db)
-):
+async def force_parse(db: Session = Depends(get_db)):
     sources = CRUD.rss_sources_methods.get_all_sources(db)
     posts = await parser.parse(sources)
 

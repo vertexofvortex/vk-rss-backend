@@ -2,6 +2,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from app.db.database import Base
 from sqlalchemy.orm import relationship
 
+
 def generateDefault(context):
     group_id = context.get_current_parameters()["group_id"]
     source_id = context.get_current_parameters()["source_id"]

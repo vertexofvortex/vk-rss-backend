@@ -13,6 +13,6 @@ class RSSSourceModel(Base):
     description = Column(String, nullable=False)
     rss_url = Column(String, nullable=False, unique=True)
     logo = Column(Integer, ForeignKey("rss_sources_logos.id"), nullable=True)
-    
+
     posts = relationship("RSSPostModel", back_populates="source")
     groups = relationship("VKGroupSourceModel", back_populates="source")

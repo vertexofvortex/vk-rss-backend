@@ -12,23 +12,20 @@ class RSSPostsMethods:
     def __init__(self) -> None:
         pass
 
-    
     def get_all_posts(self, db: Session):
         return db.query(RSSPostModel).all()
 
     def get_post_by_id(self, db: Session, post_id: int):
-        result = db.execute(
-            select(RSSPostModel)
-            .where(RSSPostModel.id == post_id)
-            
-        ).scalars().first()
+        result = (
+            db.execute(select(RSSPostModel).where(RSSPostModel.id == post_id))
+            .scalars()
+            .first()
+        )
 
         return result
 
-
     def get_posts_by_source_id(self, db: Session, source_id: int):
         return db.query(RSSPostModel).filter(RSSPostModel.source_id == source_id).all()
-
 
     def create_post(self, db: Session, post: RSSPostCreate):
         db_post = RSSPostModel(**post.dict())
@@ -39,26 +36,23 @@ class RSSPostsMethods:
 
         return db_post
 
-
     def create_posts(self, db: Session, posts: list[RSSPostCreate]):
         for post in posts:
             add_post = (
-                insert(RSSPostModel)
-                .values(**post.dict())
-                .on_conflict_do_nothing()
+                insert(RSSPostModel).values(**post.dict()).on_conflict_do_nothing()
             )
-            
+
             db.execute(add_post)
-        
+
         db.commit()
 
         return
 
-
     def update_post(self, db: Session, post: RSSPostBase, post_id: int):
-        db.query(RSSPostModel).filter(RSSPostModel.id == post_id).update(values=post.dict())
+        db.query(RSSPostModel).filter(RSSPostModel.id == post_id).update(
+            values=post.dict()
+        )
         db.commit()
-
 
     def delete_post(self, db: Session, post_id: int):
         db.query(RSSPostModel).filter(RSSPostModel.id == post_id).delete()

@@ -3,7 +3,15 @@
 from pathlib import Path
 from fastapi import FastAPI
 from app.db.database import Base, engine
-from app.endpoints import rss_sources, rss_posts, vk_usertokens, vk_groups, vk_api, parsing, image_gen
+from app.endpoints import (
+    rss_sources,
+    rss_posts,
+    vk_usertokens,
+    vk_groups,
+    vk_api,
+    parsing,
+    image_gen,
+)
 from fastapi.middleware.cors import CORSMiddleware
 
 

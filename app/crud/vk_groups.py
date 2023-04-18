@@ -19,18 +19,14 @@ class VKGroupMethods:
     def __init__(self) -> None:
         pass
 
-
     def get_all_groups(
         self,
         db: Session,
     ):
-        get_groups = (
-            select(VKGroupModel)
-        )
+        get_groups = select(VKGroupModel)
 
-        #return db.execute(get_groups).all()
+        # return db.execute(get_groups).all()
         return db.query(VKGroupModel).all()
-    
 
     def get_group_by_id(
         self,
@@ -38,8 +34,7 @@ class VKGroupMethods:
         group_id: int,
     ):
         result = db.execute(
-            select(VKGroupModel)
-            .where(VKGroupModel.id == group_id)
+            select(VKGroupModel).where(VKGroupModel.id == group_id)
         ).first()
         # FIXME: .scalars()
         if result:
@@ -47,12 +42,11 @@ class VKGroupMethods:
         else:
             return
 
-        #return db.query(VKGroupModel).filter(VKGroupModel.id == group_id).first()
-    
+        # return db.query(VKGroupModel).filter(VKGroupModel.id == group_id).first()
 
     def get_groups_by_token_id(
         self,
-        db: Session, 
+        db: Session,
         token_id: int,
     ):
         return db.query(VKGroupModel).filter(VKGroupModel.token_id == token_id).all()
@@ -65,13 +59,13 @@ class VKGroupMethods:
         aes_tools = AESTools()
         enc_token = vk_usertoken_methods.get_token_by_id(db, group.token_id).token
         dec_token = aes_tools.decrypt(enc_token, group.passphrase)
-        
+
         vk_api = VKAPIWrapper(dec_token)
 
         try:
             vk_group = await vk_api.get_group_by_id(group.vk_id)
         except:
-            raise # TODO: чё raisим?
+            raise  # TODO: чё raisим?
 
         db_group = VKGroupCreate(
             vk_id=vk_group.id,
@@ -80,16 +74,12 @@ class VKGroupMethods:
             token_id=group.token_id,
         )
 
-        add_group = (
-            insert(VKGroupModel)
-            .values(**db_group.dict())
-        )
+        add_group = insert(VKGroupModel).values(**db_group.dict())
 
         db.execute(add_group)
         db.commit()
-        
-        return
 
+        return
 
     def update_group(
         self,
@@ -100,7 +90,7 @@ class VKGroupMethods:
         group = self.get_group_by_id(db, group_id)
         if not group:
             return None
-        
+
         upd_group = (
             update(VKGroupModel)
             .where(VKGroupModel.id == group_id)
@@ -112,7 +102,6 @@ class VKGroupMethods:
 
         return self.get_group_by_id(db, group_id)
 
-
     def delete_group(
         self,
         db: Session,
@@ -121,22 +110,17 @@ class VKGroupMethods:
         group = self.get_group_by_id(db, group_id)
         if not group:
             return None
-        
-        del_group = (
-            delete(VKGroupModel)
-            .where(VKGroupModel.id == group_id)
+
+        del_group = delete(VKGroupModel).where(VKGroupModel.id == group_id)
+        del_group_sources = delete(VKGroupSourceModel).where(
+            VKGroupSourceModel.group_id == group_id
         )
-        del_group_sources = (
-            delete(VKGroupSourceModel)
-            .where(VKGroupSourceModel.group_id == group_id)
-        )
-        
+
         db.execute(del_group_sources)
         db.execute(del_group)
         db.commit()
 
         return group
-
 
     def get_group_posts(
         self,
@@ -158,7 +142,6 @@ class VKGroupMethods:
             vk_id=group.vk_id,
             posts=posts,
         )
-    
 
     def get_all_groups_posts(
         self,
@@ -171,7 +154,6 @@ class VKGroupMethods:
             groups_with_posts.append(self.get_group_posts(db, group.id))
 
         return groups_with_posts
-    
 
     def create_group_sources(
         self,
@@ -179,7 +161,7 @@ class VKGroupMethods:
         group_sources: list[VKGroupSourceBase],
     ):
         for source in group_sources:
-            #db.add(VKGroupsSources(**source.dict()))
+            # db.add(VKGroupsSources(**source.dict()))
             db.execute(
                 insert(VKGroupSourceModel)
                 .values(**source.dict())
@@ -187,7 +169,6 @@ class VKGroupMethods:
             )
 
         db.commit()
-    
 
     def delete_group_source(
         self,
@@ -195,37 +176,33 @@ class VKGroupMethods:
         group_id: int,
         source_id: int,
     ):
-        del_source = (
-            delete(VKGroupSourceModel)
-            .where(
-                VKGroupSourceModel.source_id == source_id,
-                VKGroupSourceModel.group_id == group_id
-            )
+        del_source = delete(VKGroupSourceModel).where(
+            VKGroupSourceModel.source_id == source_id,
+            VKGroupSourceModel.group_id == group_id,
         )
         db.execute(del_source)
         db.commit()
 
         return self.get_group_sources(db, group_id)
-    
 
-    def get_group_sources(
-        self,
-        db: Session,
-        group_id: int
-    ):
-        group_sources = db.query(VKGroupSourceModel).filter(VKGroupSourceModel.group_id == group_id).all()
+    def get_group_sources(self, db: Session, group_id: int):
+        group_sources = (
+            db.query(VKGroupSourceModel)
+            .filter(VKGroupSourceModel.group_id == group_id)
+            .all()
+        )
         result = []
 
         for source in group_sources:
-            result.append(db.query(RSSSourceModel).filter(RSSSourceModel.id == source.source_id).one())
+            result.append(
+                db.query(RSSSourceModel)
+                .filter(RSSSourceModel.id == source.source_id)
+                .one()
+            )
 
         return result
 
-    def create_group_source(
-        self,
-        db: Session,
-        group_source: VKGroupSourceBase
-    ):
+    def create_group_source(self, db: Session, group_source: VKGroupSourceBase):
         # add_source = (
         #     insert(VKGroupsSources)
         #     .values(**group_source.dict())

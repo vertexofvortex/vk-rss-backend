@@ -4,7 +4,7 @@ from Crypto import Random
 from Crypto.Cipher import AES
 
 
-class AESTools():
+class AESTools:
     def encrypt(self, raw_value, raw_key):
         value = self._pad(raw_value)
         key = hashlib.sha256(raw_key.encode()).digest()
@@ -12,7 +12,7 @@ class AESTools():
         cipher = AES.new(key, AES.MODE_CBC, iv)
 
         return base64.b64encode(iv + cipher.encrypt(value.encode())).decode("utf-8")
-    
+
     def decrypt(self, enc_value, raw_key):
         value = base64.b64decode(enc_value)
         key = hashlib.sha256(raw_key.encode()).digest()
@@ -23,10 +23,13 @@ class AESTools():
 
     @staticmethod
     def _pad(s):
-        return s + (AES.block_size - len(s) % AES.block_size) * chr(AES.block_size - len(s) % AES.block_size)
-    
+        return s + (AES.block_size - len(s) % AES.block_size) * chr(
+            AES.block_size - len(s) % AES.block_size
+        )
+
     @staticmethod
     def _unpad(s):
         return s[: -ord(s[len(s) - 1 :])]
-    
+
+
 aes_tools = AESTools()

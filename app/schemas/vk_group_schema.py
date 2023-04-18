@@ -10,8 +10,10 @@ class VKGroupBase(BaseModel):
     name: str
     photo_url: str
 
+
 class VKGroupCreate(VKGroupBase):
     token_id: int
+
 
 class VKGroupRequest(BaseModel):
     vk_id: int

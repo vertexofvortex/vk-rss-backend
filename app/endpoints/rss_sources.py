@@ -3,7 +3,11 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Response, Upl
 from sqlalchemy.orm import Session
 from app.crud import CRUD
 from app.depends import get_db
-from app.schemas.rss_source_schema import RSSSource, RSSSourceBase, RSSSourceWithLogoCreate
+from app.schemas.rss_source_schema import (
+    RSSSource,
+    RSSSourceBase,
+    RSSSourceWithLogoCreate,
+)
 from app.utils.parser.parse import Parser
 
 
@@ -24,17 +28,12 @@ async def check_source_url(
 
 
 @router.get("/sources")
-async def get_all_rss_sources(
-    db: Session = Depends(get_db)
-) -> List[RSSSource]:
+async def get_all_rss_sources(db: Session = Depends(get_db)) -> List[RSSSource]:
     return CRUD.rss_sources_methods.get_all_sources(db)
 
 
 @router.get("/sources/{source_id}")
-async def get_rss_source_by_id(
-    source_id: int,
-    db: Session = Depends(get_db)
-):
+async def get_rss_source_by_id(source_id: int, db: Session = Depends(get_db)):
     result = CRUD.rss_sources_methods.get_source_by_id(db, source_id)
 
     return result
@@ -69,7 +68,7 @@ async def create_rss_source(
                 description=description,
                 rss_url=rss_url,
                 logo=logo.file.read(),
-            )
+            ),
         )
     else:
         return CRUD.rss_sources_methods.create_source(
@@ -78,8 +77,9 @@ async def create_rss_source(
                 title=title,
                 description=description,
                 rss_url=rss_url,
-            )
-    )
+            ),
+        )
+
 
 @router.put("/sources/{source_id}")
 async def update_rss_source(
@@ -88,7 +88,7 @@ async def update_rss_source(
     description: str = Form(),
     rss_url: str = Form(),
     logo: Optional[UploadFile] = File(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     if logo:
         return CRUD.rss_sources_methods.create_source(
@@ -99,7 +99,7 @@ async def update_rss_source(
                 description=description,
                 rss_url=rss_url,
                 logo=logo.file.read().hex(),
-            )
+            ),
         )
     else:
         return CRUD.rss_sources_methods.update_source(
@@ -109,13 +109,10 @@ async def update_rss_source(
                 title=title,
                 description=description,
                 rss_url=rss_url,
-            )
+            ),
         )
 
 
 @router.delete("/sources/{source_id}")
-async def delete_rss_source(
-    source_id: int,
-    db: Session = Depends(get_db)
-):
+async def delete_rss_source(source_id: int, db: Session = Depends(get_db)):
     return CRUD.rss_sources_methods.delete_source(db, source_id)

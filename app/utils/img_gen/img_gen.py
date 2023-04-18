@@ -97,7 +97,7 @@ def generate_image(
     )
 
     # FIXME: debug
-    #canvas.save("test.png", format="png")
+    # canvas.save("test.png", format="png")
     canvas_bytearray = BytesIO()
     canvas.save(canvas_bytearray, format="png")
 

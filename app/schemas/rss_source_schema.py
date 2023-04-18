@@ -17,7 +17,7 @@ class RSSSourceWithLogoCreate(RSSSourceBase):
 
 class RSSSource(RSSSourceBase):
     id: int
-    #posts: list[RSSPostModel] = []
+    # posts: list[RSSPostModel] = []
 
     class Config:
         orm_mode = True
