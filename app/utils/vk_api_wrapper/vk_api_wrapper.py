@@ -69,7 +69,6 @@ class VKAPIWrapper:
 
         photo_id = save_image["response"][0]["id"]
         owner_id = save_image["response"][0]["owner_id"]
-        print(f"photo_{owner_id}_{photo_id}")
 
         publish_post = await self._get(
             f"https://api.vk.com/method/wall.post?access_token={self.usertoken}&owner_id=-{group_id}&from_group=1&attachments=photo{owner_id}_{photo_id}&message={message}&copyright={copyright}&v=5.131"

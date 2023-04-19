@@ -1,5 +1,6 @@
 import feedparser
 import aiohttp
+import requests
 from app.models.rss_post_model import RSSPostModel
 from app.schemas.rss_post_schema import RSSPostCreate
 from app.schemas.rss_source_schema import RSSSource
@@ -77,6 +78,21 @@ class Parser:
                         stripped_feed = self._strip_feed(source, feed.entries)
 
                         posts += stripped_feed
+            except:
+                print(f"An error occured while parsing the next feed: {source.title}")
+
+        return posts
+
+    def parseSync(self, sources: list[RSSSource]) -> list[RSSPostCreate]:
+        posts: RSSPostCreate = []
+
+        for source in sources:
+            try:
+                response = requests.get(source.rss_url)
+                feed = feedparser.parse(response.text)
+                stripped_feed = self._strip_feed(source, feed.entries)
+
+                posts += stripped_feed
             except:
                 print(f"An error occured while parsing the next feed: {source.title}")
 

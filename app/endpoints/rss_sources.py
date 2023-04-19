@@ -9,7 +9,7 @@ from app.schemas.rss_source_schema import (
     RSSSourceWithLogoCreate,
 )
 from app.security import auth
-from app.utils.parser.parse import Parser
+from app.utils.parser.parser import Parser
 
 
 router = APIRouter(tags=["RSS sources"])
@@ -42,7 +42,6 @@ async def get_rss_source_by_id(source_id: int, db: Session = Depends(get_db)):
 
 @router.get("/source_logo/{source_id}")
 async def get_rss_source_logo(
-    auth: Annotated[bool, Depends(auth)],
     source_id: int,
     db: Session = Depends(get_db),
 ):

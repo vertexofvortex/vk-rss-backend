@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.depends import get_db
 from app.security import auth
 
-from app.utils.parser.parse import Parser
+from app.utils.parser.parser import Parser
 
 
 router = APIRouter(tags=["RSS parsing"])
