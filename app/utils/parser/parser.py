@@ -1,6 +1,7 @@
-import feedparser
 import aiohttp
+import feedparser
 import requests
+
 from app.models.rss_post_model import RSSPostModel
 from app.schemas.rss_post_schema import RSSPostCreate
 from app.schemas.rss_source_schema import RSSSource
@@ -88,6 +89,7 @@ class Parser:
 
         for source in sources:
             try:
+                print(f"Fetching {source.title} feed...")
                 response = requests.get(source.rss_url)
                 feed = feedparser.parse(response.text)
                 stripped_feed = self._strip_feed(source, feed.entries)

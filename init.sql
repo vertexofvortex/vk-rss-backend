@@ -1,0 +1,1 @@
+CREATE DATABASE vk_rss_bot;
