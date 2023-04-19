@@ -1,6 +1,5 @@
-from pydantic import BaseSettings
 from dotenv import load_dotenv
-
+from pydantic import BaseSettings
 
 load_dotenv()
 
@@ -15,6 +14,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
     SERVICE_PASSWORD: str = "1563"
+    BG_PARSING_INTERVAL_SECONDS: int = "900"
 
 
 settings = Settings()

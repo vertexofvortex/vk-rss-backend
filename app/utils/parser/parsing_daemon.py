@@ -1,10 +1,9 @@
 import threading
 import time
-from fastapi import Depends
-from sqlalchemy.orm import Session
-from app.db.database import SessionLocal
-from app.depends import get_db
+
 from app.crud import CRUD
+from app.db.database import SessionLocal
+from app.settings import settings
 from app.utils.parser.parser import Parser
 
 
@@ -12,6 +11,7 @@ class ParsingDaemon:
     def __init__(self) -> None:
         self.parser = Parser()
         self.thread = threading.Thread(target=self.parse)
+        self.interval = settings.BG_PARSING_INTERVAL_SECONDS
 
     def parse(self):
         db = SessionLocal()
@@ -24,9 +24,11 @@ class ParsingDaemon:
 
             CRUD.rss_posts_methods.create_posts(db, posts)
 
-            print(f"Background parsing complete. There are {len(posts)} posts in DB.")
+            print(
+                f"Background parsing complete. There are {len(posts)} posts in DB. The next parsing is scheduled in {int(self.interval / 60)} minutes."
+            )
 
-            time.sleep(900)
+            time.sleep(self.interval)
 
     def start(self):
         self.thread.start()
