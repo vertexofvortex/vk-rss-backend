@@ -1,4 +1,6 @@
 from io import BytesIO
+from typing import Union
+
 import aiohttp
 import requests
 
@@ -40,6 +42,7 @@ class VKAPIWrapper:
         image: BytesIO,
         image_filename: str,
         copyright: str,
+        publish_date: Union[int, None],
     ):
         # Step 1: getting the upload server
 
@@ -70,9 +73,14 @@ class VKAPIWrapper:
         photo_id = save_image["response"][0]["id"]
         owner_id = save_image["response"][0]["owner_id"]
 
-        publish_post = await self._get(
-            f"https://api.vk.com/method/wall.post?access_token={self.usertoken}&owner_id=-{group_id}&from_group=1&attachments=photo{owner_id}_{photo_id}&message={message}&copyright={copyright}&v=5.131"
-        )
+        if publish_date is not None:
+            publish_post = await self._get(
+                f"https://api.vk.com/method/wall.post?access_token={self.usertoken}&owner_id=-{group_id}&from_group=1&attachments=photo{owner_id}_{photo_id}&message={message}&copyright={copyright}&publish_date={publish_date}&v=5.131"
+            )
+        else:
+            publish_post = await self._get(
+                f"https://api.vk.com/method/wall.post?access_token={self.usertoken}&owner_id=-{group_id}&from_group=1&attachments=photo{owner_id}_{photo_id}&message={message}&copyright={copyright}&v=5.131"
+            )
 
         return True
 

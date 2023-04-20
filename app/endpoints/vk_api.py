@@ -1,5 +1,5 @@
 from io import BytesIO
-from typing import Annotated
+from typing import Annotated, Union
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
@@ -117,6 +117,7 @@ async def post(
     usertoken_id: int = Form(),
     passphrase: str = Form(),
     group_id: int = Form(),
+    publish_date: Union[int, None] = Form(None),
     db: Session = Depends(get_db),
 ):
     enc_token = vk_usertoken_methods.get_token_by_id(db, usertoken_id).token
@@ -140,4 +141,5 @@ async def post(
         copyright=source_url,
         image=image_bytes,
         image_filename="image.png",
+        publish_date=publish_date,
     )
