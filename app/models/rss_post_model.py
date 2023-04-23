@@ -16,7 +16,6 @@ class RSSPostModel(Base):
     image_url = Column(String, nullable=True)
     post_url = Column(String, nullable=False, unique=True)
     categories = Column(String, nullable=True)
-    # TODO: publish_date must be a DateTime
     publish_date = Column(Integer, nullable=True)
 
     source = relationship("RSSSourceModel", back_populates="posts")
