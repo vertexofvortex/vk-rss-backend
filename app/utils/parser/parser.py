@@ -1,3 +1,6 @@
+import time
+import traceback
+
 import aiohttp
 import feedparser
 import requests
@@ -32,7 +35,10 @@ class Parser:
                     post_url=(item.link if hasattr(item, "link") else None),
                     categories=(item.category if hasattr(item, "category") else None),
                     publish_date=(
-                        item.published if hasattr(item, "published") else None
+                        int(time.mktime(item.published_parsed))
+                        # item.published
+                        if hasattr(item, "published_parsed")
+                        else None
                     ),
                 )
             )
@@ -79,8 +85,9 @@ class Parser:
                         stripped_feed = self._strip_feed(source, feed.entries)
 
                         posts += stripped_feed
-            except:
+            except Exception:
                 print(f"An error occured while parsing the next feed: {source.title}")
+                print(traceback.format_exc())
 
         return posts
 
@@ -95,8 +102,9 @@ class Parser:
                 stripped_feed = self._strip_feed(source, feed.entries)
 
                 posts += stripped_feed
-            except:
+            except Exception:
                 print(f"An error occured while parsing the next feed: {source.title}")
+                print(traceback.format_exc())
 
         return posts
 

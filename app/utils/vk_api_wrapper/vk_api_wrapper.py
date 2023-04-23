@@ -83,25 +83,3 @@ class VKAPIWrapper:
             )
 
         return True
-
-        # print(upload_server["response"]["upload_url"])
-
-        # async with aiohttp.ClientSession() as session:
-        #     with aiohttp.MultipartWriter() as mp_writer:
-        #         mp_writer.append_form({
-        #             "photo": image,
-        #         }, { "Content-Type": "multipart/form-data" })
-
-        #         async with session.post(
-        #             upload_server["response"]["upload_url"],
-        #             data=mp_writer
-        #         ) as response:
-        #             # Ignoring MIME type because VK API thinks
-        #             # that it's sending me plain HTML
-        #             result = await response.json(content_type=None)
-
-        #             print(result)
-
-        # await self._get(
-        #     f"https://api.vk.com/method/wall.post?access_token={self.usertoken}&owner_id={group_id}&message={message}&"
-        # )

@@ -1,8 +1,9 @@
 """RSS post model"""
 
 from sqlalchemy import Column, ForeignKey, Integer, String
-from app.db.database import Base
 from sqlalchemy.orm import relationship
+
+from app.db.database import Base
 
 
 class RSSPostModel(Base):
@@ -16,6 +17,6 @@ class RSSPostModel(Base):
     post_url = Column(String, nullable=False, unique=True)
     categories = Column(String, nullable=True)
     # TODO: publish_date must be a DateTime
-    publish_date = Column(String, nullable=True)
+    publish_date = Column(Integer, nullable=True)
 
     source = relationship("RSSSourceModel", back_populates="posts")
