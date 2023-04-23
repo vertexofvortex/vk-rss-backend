@@ -9,7 +9,8 @@ class RSSPostBase(BaseModel):
     image_url: str | None
     post_url: str
     categories: str | None
-    publish_date: str | None
+    publish_date: int | None
+    blacklisted: bool
 
 
 class RSSPostCreate(RSSPostBase):

@@ -3,9 +3,10 @@
 from sqlalchemy import select, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
+
 from app.models.rss_post_model import RSSPostModel
-from app.schemas.rss_post_schema import RSSPostBase, RSSPostCreate
 from app.models.rss_source_model import RSSSourceModel
+from app.schemas.rss_post_schema import RSSPostBase, RSSPostCreate
 
 
 class RSSPostsMethods:
@@ -13,7 +14,12 @@ class RSSPostsMethods:
         pass
 
     def get_all_posts(self, db: Session):
-        return db.query(RSSPostModel).all()
+        return (
+            db.query(RSSPostModel)
+            .filter(RSSPostModel.blacklisted != True)
+            .order_by(-RSSPostModel.publish_date)
+            .all()
+        )
 
     def get_post_by_id(self, db: Session, post_id: int):
         result = (
@@ -57,6 +63,21 @@ class RSSPostsMethods:
     def delete_post(self, db: Session, post_id: int):
         db.query(RSSPostModel).filter(RSSPostModel.id == post_id).delete()
         db.commit()
+
+    def block_post(self, db: Session, post_id: int):
+        db.query(RSSPostModel).filter(RSSPostModel.id == post_id).update(
+            values={"blacklisted": True}
+        )
+        db.commit()
+
+    def unblock_post(self, db: Session, post_id: int):
+        db.query(RSSPostModel).filter(RSSPostModel.id == post_id).update(
+            values={"blacklisted": False}
+        )
+        db.commit()
+
+    def get_blacklisted_posts(self, db: Session):
+        return db.query(RSSPostModel).filter(RSSPostModel.blacklisted == True).all()
 
 
 rss_posts_methods = RSSPostsMethods()

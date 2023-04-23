@@ -40,6 +40,7 @@ class Parser:
                         if hasattr(item, "published_parsed")
                         else None
                     ),
+                    blacklisted=False,
                 )
             )
 
