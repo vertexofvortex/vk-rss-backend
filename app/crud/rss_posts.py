@@ -1,5 +1,8 @@
 """CRUD utils for RSS posts table"""
 
+import time
+
+from httpx import delete
 from sqlalchemy import select, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
@@ -7,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.models.rss_post_model import RSSPostModel
 from app.models.rss_source_model import RSSSourceModel
 from app.schemas.rss_post_schema import RSSPostBase, RSSPostCreate
+from app.settings import settings
 
 
 class RSSPostsMethods:
@@ -78,6 +82,17 @@ class RSSPostsMethods:
 
     def get_blacklisted_posts(self, db: Session):
         return db.query(RSSPostModel).filter(RSSPostModel.blacklisted == True).all()
+
+    def clear_old_posts(self, db: Session):
+        db.query(RSSPostModel).filter(
+            RSSPostModel.publish_date
+            < int(time.time()) - settings.BG_CLEANUP_INTERVAL_SECONDS
+        ).delete()
+        db.commit()
+
+        posts = db.query(RSSPostModel).all()
+
+        return len(posts)
 
 
 rss_posts_methods = RSSPostsMethods()

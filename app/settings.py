@@ -14,7 +14,8 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
     SERVICE_PASSWORD: str = "1563"
-    BG_PARSING_INTERVAL_SECONDS: int = "900"
+    BG_PARSING_INTERVAL_SECONDS: int = 900
+    BG_CLEANUP_INTERVAL_SECONDS: int = 86400
 
 
 settings = Settings()
