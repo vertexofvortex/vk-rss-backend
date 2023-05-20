@@ -37,6 +37,13 @@ class RSSPostsMethods:
     def get_posts_by_source_id(self, db: Session, source_id: int):
         return db.query(RSSPostModel).filter(RSSPostModel.source_id == source_id).all()
 
+    def get_source_by_post_id(self, db: Session, post_id: int):
+        post = self.get_post_by_id(db, post_id)
+
+        return (
+            db.query(RSSSourceModel).filter(RSSSourceModel.id == post.source_id).first()
+        )
+
     def create_post(self, db: Session, post: RSSPostCreate):
         db_post = RSSPostModel(**post.dict())
 

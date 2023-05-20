@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from fastapi import Depends, FastAPI
+import uvicorn
 from app.crud import CRUD
 from app.db.database import Base, engine
 from app.depends import get_db

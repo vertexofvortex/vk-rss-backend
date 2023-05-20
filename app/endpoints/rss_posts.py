@@ -26,10 +26,17 @@ async def get_rss_posts_by_id(
 
 
 @router.get("/posts/by_source/{source_id}")
-async def get_rss_post_by_source_id(
+async def get_rss_posts_by_source_id(
     auth: Annotated[bool, Depends(auth)], source_id: int, db: Session = Depends(get_db)
 ):
     return CRUD.rss_posts_methods.get_posts_by_source_id(db, source_id)
+
+
+@router.get("/posts/source/{post_id}")
+async def get_rss_source_by_post_id(
+    auth: Annotated[bool, Depends(auth)], post_id: int, db: Session = Depends(get_db)
+):
+    return CRUD.rss_posts_methods.get_source_by_post_id(db, post_id)
 
 
 @router.post("/posts")
