@@ -23,12 +23,26 @@ async def generate_snippet(
     image_url: Union[str, None] = Form(None),
     logo: UploadFile = File(),
 ):
-    if image_url is None:
+    if (image) and (image_url is None):
         generated_image = generate_image(
             title=title,
             description=description,
             source=source,
             image_bytes=BytesIO(image.file.read()),
+            logo_bytes=BytesIO(logo.file.read()),
+        )
+
+        return Response(
+            content=generated_image.getvalue(),
+            media_type="image/png",
+        )
+
+    if (image_url is None) and (image is None):
+        generated_image = generate_image(
+            title=title,
+            description=description,
+            source=source,
+            image_bytes=None,
             logo_bytes=BytesIO(logo.file.read()),
         )
 

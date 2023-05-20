@@ -1,11 +1,16 @@
 from io import BytesIO
+from typing import Union
 from PIL import Image, ImageFont, ImageDraw, ImageColor
 from .textwrapper import TextWrapper
 from os.path import dirname, join
 
 
 def generate_image(
-    title: str, description: str, source: str, image_bytes: BytesIO, logo_bytes: BytesIO
+    title: str,
+    description: str,
+    source: str,
+    image_bytes: Union[BytesIO, None],
+    logo_bytes: BytesIO,
 ) -> BytesIO:
     CANVAS_WIDTH = 1500
     CANVAS_HEIGHT = 1500
@@ -15,7 +20,11 @@ def generate_image(
 
     canvas = Image.new("RGBA", (CANVAS_WIDTH, CANVAS_HEIGHT))
 
-    image = Image.open(image_bytes)
+    if image_bytes:
+        image = Image.open(image_bytes)
+    else:
+        image = Image.open(join(dirname(__file__), "default_bg.jpg"))
+
     image_aspect_ratio = image.width / image.height
     image_resized = image.resize(
         (CANVAS_WIDTH, int(CANVAS_WIDTH / image_aspect_ratio)),
