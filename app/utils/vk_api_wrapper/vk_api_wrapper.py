@@ -41,7 +41,7 @@ class VKAPIWrapper:
         message: str,
         image: BytesIO,
         image_filename: str,
-        copyright: str,
+        copyright: Union[str, None],
         publish_date: Union[int, None],
     ):
         # Step 1: getting the upload server

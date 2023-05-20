@@ -57,62 +57,13 @@ async def get_group_by_id(
     return group
 
 
-# @router.post("/vk_api/post")
-# async def create_post(
-#     auth: Annotated[bool, Depends(auth)],
-#     title: str = Form(),
-#     description: str = Form(),
-#     source: str = Form(),
-#     source_url: str = Form(),
-#     image: UploadFile = File(),
-#     logo: UploadFile = Form(),
-#     usertoken_id: int = Form(),
-#     passphrase: str = Form(),
-#     group_id: int = Form(),
-#     db: Session = Depends(get_db),
-# ):
-#     enc_token = vk_usertoken_methods.get_token_by_id(db, usertoken_id).token
-#     dec_token = aes_tools.decrypt(enc_token, passphrase)
-
-#     vk_api = VKAPIWrapper(dec_token)
-
-#     try:
-#         group_vk_id = CRUD.vk_group_methods.get_group_by_id(db, group_id).vk_id
-#     except:
-#         raise HTTPException(
-#             status_code=500, detail=f"Group with ID {group_id} does not exist."
-#         )
-
-#     image_bytes = BytesIO(image.file.read())
-#     logo_bytes = BytesIO(logo.file.read())
-#     message = f"{title}%0A%0A{description}%0A%0A{source_url}"
-
-#     generated_image = generate_image(
-#         title=title,
-#         description=description,
-#         source=source,
-#         image_bytes=image_bytes,
-#         logo_bytes=logo_bytes,
-#     )
-
-#     generated_image.seek(0)
-
-#     await vk_api.create_post(
-#         group_id=group_vk_id,
-#         message=message,
-#         copyright=source_url,
-#         image=generated_image,
-#         image_filename="image.png",
-#     )
-
-
 @router.post("/vk_api/post")
 async def post(
     auth: Annotated[bool, Depends(auth)],
     title: str = Form(),
     description: str = Form(),
-    source: str = Form(),
-    source_url: str = Form(),
+    source: Union[str, None] = Form(None),
+    source_url: Union[str, None] = Form(None),
     image: UploadFile = File(),
     usertoken_id: int = Form(),
     passphrase: str = Form(),
@@ -133,7 +84,11 @@ async def post(
         )
 
     image_bytes = image.file.read()
-    message = f"{title}%0A%0A{description}%0A%0A{source_url}"
+
+    if source_url:
+        message = f"{title}%0A%0A{description}%0A%0A{source_url}"
+    else:
+        message = f"{title}%0A%0A{description}"
 
     await vk_api.create_post(
         group_id=group_vk_id,
